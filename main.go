@@ -71,13 +71,13 @@ func readUsersFromJsonFile(reader io.Reader) ([]User, error) {
 	return users, nil
 }
 
-func writeUsersToJsonFile(users *[]User, writer io.Writer) error {
+func writeUsersToJsonFile(users *[]User, fileName string) error {
 	byteBuffer, err := json.Marshal(users)
 	if err != nil {
 		return err
 	}
 
-	if _, err := writer.Write(byteBuffer); err != nil {
+	if err := os.WriteFile(fileName, byteBuffer, FILE_PERMISSION); err != nil {
 		return err
 	}
 	return nil
@@ -135,7 +135,7 @@ func add(fileName, item string, writer io.Writer) error {
 	}
 
 	users = append(users, addingUser)
-	if err = writeUsersToJsonFile(&users, file); err != nil {
+	if err = writeUsersToJsonFile(&users, fileName); err != nil {
 		return err
 	}
 
@@ -190,7 +190,7 @@ func remove(id, fileName string, writer io.Writer) error {
 	for i, user := range users {
 		if user.Id == id {
 			newUsers := append(users[:i], users[i+1:]...)
-			if err = writeUsersToJsonFile(&newUsers, file); err != nil {
+			if err = writeUsersToJsonFile(&newUsers, fileName); err != nil {
 				return err
 			}
 			return nil
